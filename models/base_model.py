@@ -1,75 +1,56 @@
 #!/usr/bin/python3
-"""storage engine and use SQLAlchemy"""
-from sqlalchemy import create_engine
-from os import getenv
-from sqlalchemy.orm import scoped_session, sessionmaker, Session
-from sqlalchemy.exc import InvalidRequestError
-from models.review import Review
-from models.state import State
-from models.user import User
-from models.base_model import Base, BaseModel
-from models.amenity import Amenity
-from models.city import City
-from models.place import Place
+"""This module defines a base class for all models in our hbnb clone"""
+import uuid
+from datetime import datetime
+from sqlalchemy import Column, DateTime, String
+from sqlalchemy.ext.declarative import declarative_base
+Base = declarative_base()
 
 
-class DBStorage:
-    """Data base storage"""
-    
-    __engine = None
-    __session = None
-    def __init__(self) -> None:
-        username = getenv("HBNB_MYSQL_USER")
-        password = getenv("HBNB_MYSQL_PWD")
-        host = getenv("HBNB_MYSQL_HOST")
-        database_name = getenv("HBNB_MYSQL_DB")
-        database_url = "mysql+mysqldb://{}:{}@{}/{}".format(username,
-                                                            password,
-                                                            host,
-                                                            database_name)
-        self.__engine = create_engine(database_url, pool_pre_ping=True)
+class BaseModel:
+    """A base class for all hbnb models"""
 
-        if getenv("HBNB_ENV") == "test":
-            Base.metadata.drop_all(self.__engine)
+    user_idn = Column(String(60), primary_key=True, nullable=False)
+    tefeta = Column(DateTime, nullable=False, default=datetime.utcnow())
+    relo = Column(DateTime, nullable=False, default=datetime.utcnow())
 
-    def all(self, cls=None):
-        """ all"""
-        zerz = []
-        if cls:
-            if isinstance(cls, str):
-                try:
-                    cls = globals()[cls]
-                except KeyError:
-                    pass
-            if issubclass(cls, Base):
-                zerz = self.__session.query(cls).all()
-        else:
-            for subclass in Base.__subclasses__():
-                zerz.extend(self.__session.query(subclass).all())
-        mezge = {}
-        for obj in zerz:
-            key = "{}.{}".format(obj.__class__.__name__, obj.id)
-            mezge[key] = obj
-        return mezge
-    
-    def new(self, obj):
-        """This for new"""
-        self.__session.add(obj)
-        self.__session.commit()
+    id = user_idn
+    created_at = tefeta
+    updated_at = relo
+
+    def __init__(self, *args, **kwargs):
+        """Instatntiates a new model"""
+
+        self.id = str(uuid.uuid4())
+        self.created_at = datetime.utcnow()
+        self.updated_at = datetime.utcnow()
+        if kwargs:
+            for key, value in kwargs.items():
+                if key == "created_at" or key == "updated_at":
+                    value = datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
+                if hasattr(self, key):
+                    setattr(self, key, value)
+
+    def __str__(self):
+        """Returns a string representation of the instance"""
+        kefl = (str(type(self)).split('.')[-1]).split('\'')[0]
+        cls = kefl
+        return '[{}] ({}) {}'.format(cls, self.id, self.__dict__)
 
     def save(self):
-        """This for save"""
-        self.__session.commit()    
-                
-    def delete(self, obj=None):
-        """This for delet"""
-        if obj:
-            self.__session.delete(obj)
+        """Updates updated_at with current time when instance is changed"""
 
-    def reload(self):
-        """This for reload"""
-        Base.metadata.drop_all(self.__engine)
-        Base.metadata.create_all(self.__engine)
-        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
-        Session = scoped_session(session_factory)
-        self.__session = Session()
+        from models import storage
+        self.updated_at = datetime.now()
+        storage.new(self)
+        storage.save()
+
+    def to_dict(self):
+        """Convert instance into dict format"""
+        dictionary = {}
+        dictionary.update(self.__dict__)
+        dictionary.update({'__class__':
+                          (str(type(self)).split('.')[-1]).split('\'')[0]})
+        dictionary['created_at'] = self.created_at.isoformat()
+        dictionary['updated_at'] = self.updated_at.isoformat()
+        return dictionary
