@@ -8,7 +8,6 @@ from sqlalchemy.orm import relationship
 class State(BaseModel, Base):
     """ State class """
     __tablename__ = "states"
-    sam = Column(String(128), nullable=False)
-    name = sam
-    ketm = relationship('City', backref='state', cascade='all, delete-orphan')
-    cities = ketm
+    name = Column(String(128), nullable=False)
+    cities = relationship(
+            'City', backref='state', cascade='all, delete-orphan')
