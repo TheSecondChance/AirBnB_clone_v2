@@ -72,7 +72,6 @@ class DBStorage:
         """This for reload"""
         Base.metadata.drop_all(self.__engine)
         Base.metadata.create_all(self.__engine)
-        gieza_mabav = sessionmaker(bind=self.__engine, expire_on_commit=False)
-        mabaza = gieza_mabav
+        mabaza = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(mabaza)
         self.__session = Session()
