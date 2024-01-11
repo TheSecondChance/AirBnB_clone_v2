@@ -1,18 +1,23 @@
 #!/usr/bin/python3
+"""
+script that generates a .tgz archive
+"""
 from datetime import datetime
+from fabric.api import local
 import os
-from fabric.api import *
 
-env.hosts = ['localhost']
 
 def do_pack():
+    """
+    compress
+    """
     try:
-        mezeg = "versions/web_static_" + datetime.now().\
-                   strftime("%Y%m%d%H%M%S") + ".tgz"
-        local("mkdir -p versions")
-        local("tar -zcvf versions/web_static_$(date +%Y%m%d%H%M%S).tgz\
-        web_static")
-        print("web_static packed: {} -> {}".
-              format(mezeg, os.path.getsize(mezeg)))
-    except:
-            return None
+        if not os.path.exists("versions"):
+            local('mkdir versions')
+        t = datetime.now()
+        f = "%Y%m%d%H%M%S"
+        mezegb = 'versions/web_static_{}.tgz'.format(t.strftime(f))
+        local('tar -cvzf {} web_static'.format(mezegb))
+        return mezegb
+    except BaseException:
+        return None
