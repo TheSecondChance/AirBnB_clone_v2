@@ -1,14 +1,17 @@
 #!/usr/bin/python3
-"""Deletes out-of-date archives"""
-
+# Fabfile to delete out-of-date
 import os
 from fabric.api import *
 
 env.hosts = ['52.91.154.49', '54.197.206.197']
+env.user = "ubuntu"
 
 
 def do_clean(number=0):
-    """Delete out-of-date archives"""
+    """Delete archive out-of-date
+    Args:
+        number (int): The number of archives to keep
+    """
     number = 1 if int(number) == 0 else int(number)
 
     archives = sorted(os.listdir("versions"))
