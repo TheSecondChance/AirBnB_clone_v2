@@ -16,7 +16,7 @@ def do_pack():
             local('mkdir versions')
         t = datetime.now()
         f = "%Y%m%d%H%M%S"
-        mezegb = 'versions/web_static_{}.tgz'.format(t.strftime(f))
+        mezegb = 'versions/web_static{}.tgz'.format(t.strftime(f))
         local('tar -cvzf {} web_static'.format(mezegb))
         return mezegb
     except BaseException:
