@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-"""
-Fabric script"""
+"""Fabric script"""
 
 from fabric.api import env, local, put, run
 from datetime import datetime
