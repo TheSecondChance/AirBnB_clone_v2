@@ -42,7 +42,7 @@ def number(n):
 def priNumb(n):
     """print number HTML page only if n is an integer
     """
-    return render_template("5-number.html", num=n)
+    return render_template("5-number.html", n=n)
 
 
 if __name__ == '__main__':
