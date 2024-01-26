@@ -38,9 +38,9 @@ def number(n):
     return "{} is a number".format(n)
 
 
-@app.route('/number_template/<int:n>')
+@app.route('/number_template/<int:n>', strict_slashes=False)
 def priNumb(n):
-    """print number
+    """print number HTML page only if n is an integer
     """
     return render_template("5-number.html", num=n)
 
