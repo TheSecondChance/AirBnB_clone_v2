@@ -51,7 +51,7 @@ def number(n):
 
 
 @app.route('/number_template/<int:n>', strict_slashes=False)
-def number_temp(n):
+def number_temp(n=None):
     """
     template path to display
     """
