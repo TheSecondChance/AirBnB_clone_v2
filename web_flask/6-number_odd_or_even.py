@@ -6,7 +6,7 @@ listening on 0.0.0.0, port 5000
 
 from flask import Flask, render_template
 
-app = Flask("__name__")
+app = Flask(__name__)
 
 
 @app.route('/', strict_slashes=False)
@@ -51,7 +51,7 @@ def number(n):
 
 
 @app.route('/number_template/<int:n>', strict_slashes=False)
-def number_temp(n):
+def number_temp(n=None):
     """
     template path to display
     """
@@ -59,12 +59,12 @@ def number_temp(n):
 
 
 @app.route('/number_odd_or_even/<int:n>', strict_slashes=False)
-def checknum(n):
+def number_odd_or_even(n):
     """
-    check even or  odd number path
+        check even or  odd number path
     """
-    return render_template("6-number_odd_or_even.html", n=n)
-
+    return render_template('6-number_odd_or_even.html', n=n)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port='5000')
+
