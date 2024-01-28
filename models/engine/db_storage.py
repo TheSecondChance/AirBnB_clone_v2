@@ -75,3 +75,7 @@ class DBStorage:
         mabaza = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(mabaza)
         self.__session = Session()
+
+    def close(self):
+        """Thsi is close session"""
+        self.__session.close()
