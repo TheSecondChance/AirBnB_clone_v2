@@ -10,31 +10,24 @@ from os import getenv
 import models
 
 
-storage_type = getenv("HBNB_TYPE_STORAGE")
-
-
 class State(BaseModel, Base):
     """"state a for many to many relationship table
     between Place and Amenity record
     """
     __tablename__ = 'states'
-    if storage_type == 'db':
-        name = Column(String(128), nullable=False)
-        cities = relationship("City", backref="state",
-                              cascade="all, delete-orphan")
-    else:
-        name = ""
+    name = Column(String(128), nullable=False)
 
-    if storage_type != 'db':
+    if getenv("HBNB_TYPE_STORAGE") == "db":
+        cities = relationship("City", backref="state",
+                              cascade="all, delete")
+    else:
         @property
         def cities(self):
+            """"state a for many to many relationship table
+            between Place and Amenity record
             """
-            get list of City instances with state_id
-            equals to the current State.id
-            """
-            list_cities = []
-            all_cities = models.storage.all(City)
-            for key, city_obj in all_cities.items():
-                if city_obj.state_id == self.id:
-                    list_cities.append(city_obj)
-            return list_cities
+            cityList = []
+            for city in models.storage.all(City).values():
+                if city.state_id == self.id:
+                    cityList.append(city)
+            return cityList
